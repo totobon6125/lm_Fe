@@ -59,7 +59,7 @@ const Header: React.FC = () => {
             />
           </svg>
           {/* <img src="" alt="logo" onClick={goToMain}>로고</img> */}
-          <button onClick={login}>로그인</button>
+          <button onClick={login}>로그아우우우</button>
         </St.HeaderWrap>
       ) : (
         /* 로그인 후 */
