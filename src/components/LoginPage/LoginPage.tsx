@@ -90,10 +90,10 @@ const LoginPage: React.FC = () => {
 
   return (
     <ST.Container>
-      <h1 onClick={goToMain}>로그인</h1>
+      <h1 onClick={goToMain}>수정수정</h1>
       {/* <img src="" alt="logo" onClick={goToMain}>로고</img> */}
       <ST.LabelWrapper>
-        <label>이메일</label>
+        <label>email</label>
         <ST.InputWithIcon>
           <ST.StyledInput
             type="email"
@@ -114,7 +114,7 @@ const LoginPage: React.FC = () => {
       </ST.LabelWrapper>
 
       <ST.LabelWrapper>
-        <label>비밀번호</label>
+        <label>password</label>
         <ST.InputWithIcon>
           <ST.StyledInput
             type="password"
