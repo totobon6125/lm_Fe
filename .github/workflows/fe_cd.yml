@@ -24,6 +24,12 @@ jobs:
       - name: Build project
         run: yarn build # 또는 npm run build, 프로젝트 빌드 명령
 
+      - name: Create .env file
+        run: |
+          echo "VITE_REACT_APP_URL=${{ secrets.VITE_REACT_APP_URL }}" > .env
+          echo "VITE_REACT_APP_KAKAO_CLIENT_ID=${{ secrets.VITE_REACT_APP_KAKAO_CLIENT_ID }}" >> .env
+          echo "VITE_REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.VITE_REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
+
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
