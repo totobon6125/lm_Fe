@@ -1,3 +1,5 @@
+.env
+
 # Logs
 logs
 *.log
@@ -24,7 +26,8 @@ dist-ssr
 *.sw?
 
 # .env
-.env
+abc
+
 
 fe_cd2.yml
 fe_cd3.yml
