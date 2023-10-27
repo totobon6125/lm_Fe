@@ -32,13 +32,17 @@ jobs:
         run: |
           #cd client
           yarn run build
-
-      - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
+          
+# 현재 build된 폴더에 접근 후 s3 버킷에 build 파일 업로드
+      - name: S3 Deploy
+        run: aws s3 sync ./build s3://totobon.store/ --acl bucket-owner-full-control 
+        env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Invalidate CloudFront Cache # 새로 리소스를 업데이트할 때 기존 캐시 무효화
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          AWS_DISTRIBUTION: ${{ secrets.AWS_DISTRIBUTION_ID }}
+          PATHS: '/index.html'
+        continue-on-error: true
