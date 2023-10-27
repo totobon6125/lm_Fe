@@ -24,9 +24,14 @@ jobs:
       - name: Build project
         run: yarn build # 또는 npm run build, 프로젝트 빌드 명령
 
+      - name: Set Environment Variable for Backend Domain
+        run: |
+          echo "VITE_REACT_APP_URL=${{ secrets.VITE_REACT_APP_URL }}" >> $GITHUB_ENV
+        env:
+          VITE_REACT_APP_URL: ${{ secrets.VITE_REACT_APP_URL }}
+
       - name: Create .env file
         run: |
-          echo "VITE_REACT_APP_URL=${{ secrets.VITE_REACT_APP_URL }}" > .env
           echo "VITE_REACT_APP_KAKAO_CLIENT_ID=${{ secrets.VITE_REACT_APP_KAKAO_CLIENT_ID }}" >> .env
           echo "VITE_REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.VITE_REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
 
