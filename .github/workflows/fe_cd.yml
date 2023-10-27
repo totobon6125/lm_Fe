@@ -13,21 +13,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # 사용할 Node.js 버전
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 18 # 사용할 Node.js 버전
+          node-version: 18 
       
+      # 코드에서 사용할 .env 설정
       - name: Create .env.production file
         run: |
-          #cd lm_Fe
           echo 'VITE_REACT_APP_URL=${{ secrets.VITE_REACT_APP_URL }}' > .env
 
+      # 또는 npm install, 프로젝트 종속성 설치 명령
       - name: Install dependencies
-        run: yarn install # 또는 npm install, 프로젝트 종속성 설치 명령
+        run: yarn install 
 
+      # 또는 npm run build, 프로젝트 빌드 명령
       - name: Build project
-        run: yarn build # 또는 npm run build, 프로젝트 빌드 명령
+        run: yarn build 
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
