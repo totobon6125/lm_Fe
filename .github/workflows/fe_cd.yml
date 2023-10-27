@@ -30,7 +30,7 @@ jobs:
 
       - name: Build project
         run: |
-          cd client
+          #cd client
           yarn run build
 
       - name: Deploy to S3
