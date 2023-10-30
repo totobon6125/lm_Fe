@@ -90,7 +90,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <ST.Container>
-      <h1 onClick={goToMain}>수정수정</h1>
+      <h1 onClick={goToMain}>종화님 화이팅!!</h1>
       {/* <img src="" alt="logo" onClick={goToMain}>로고</img> */}
       <ST.LabelWrapper>
         <label>email</label>

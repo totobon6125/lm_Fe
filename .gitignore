@@ -8,3 +8,8 @@ fe_cd2.yml
 fe_cd3.yml
 
 dist
+
+이미 업로드되서 이력이 있는 파일은 git 에서 이력을 삭제해야 gitignore 에 설정이 가능함.
+git rm --cached .env
+
+package.json
