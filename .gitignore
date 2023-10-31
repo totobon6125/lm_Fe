@@ -1,15 +1,26 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
 node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 .env
-
-abc
-
-fe_cd2.yml
-fe_cd3.yml
-
-dist
-
-이미 업로드되서 이력이 있는 파일은 git 에서 이력을 삭제해야 gitignore 에 설정이 가능함.
-git rm --cached .env
-
-package.json

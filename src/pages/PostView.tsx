@@ -1,11 +1,14 @@
 import React from "react";
 import Header from "../components/common/Header/Header";
+import { ViewPost } from "../components/PostPage/ViewPost";
+import { Modal } from "../components/common/Modal";
 
 const PostView: React.FC = () => {
   return (
     <>
       <Header></Header>
-      <p>이곳은 게시글 상세 페이지 입니다.</p>
+      <ViewPost></ViewPost>
+      <Modal></Modal>
     </>
   );
 };

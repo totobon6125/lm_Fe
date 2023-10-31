@@ -36,7 +36,7 @@ export const LabelWrapper = styled.div`
   }
 
   & input {
-    border: 1px solid #E7E7E7;
+    border: 1px solid #e7e7e7;
     background: #fff;
     border-radius: 5px;
     padding: 10px;
@@ -46,7 +46,7 @@ export const LabelWrapper = styled.div`
 
 export const EyleToggleWrap = styled.div`
   position: relative;
-`
+`;
 
 export const EyeToggleButton = styled.button`
   position: absolute;
@@ -55,6 +55,7 @@ export const EyeToggleButton = styled.button`
   transform: translateY(-50%);
   background: none;
   border: none;
+  color: #adadad;
   cursor: pointer;
 `;
 
@@ -62,22 +63,37 @@ export const ErrorMessageJoin = styled.div`
   font-size: 12px;
   color: #da7969;
   text-align: left;
-  margin-top: 5px;
 `;
 
 export const DupCheckButtonWrap = styled.div`
-  border: 1px solid #E7E7E7;
+  border: 1px solid #e7e7e7;
   padding: 2px;
   margin-left: 5px;
   border-radius: 23px;
-`
+`;
 
 export const DupCheckButton = styled.button`
-  border: 1px solid #ADADAD;
+  border: 1px solid #adadad;
   border-radius: 20px;
-  background-color: #F7D16F;
+  background-color: #f7d16f;
   cursor: pointer;
   font-size: 12px;
   padding: 5px;
   color: #646464;
+`;
+
+export const ValidationColor = styled.div<{ isValid: boolean | null }>`
+  color: ${(props) =>
+    props.isValid === null ? "gray" : props.isValid ? "#14be1d" : "#da7969"};
+  font-size: 12px;
+  text-align: left;
+  margin-top: 5px;
+`;
+
+export const CountdownText = styled.span`
+  font-size: 12px;
+  color: #da7969;
+  text-align: center;
+  margin-left: 170px;
+  margin-top: 6px;
 `;

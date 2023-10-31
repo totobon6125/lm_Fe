@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import * as St from "./STMypageTabs";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLanguage } from "../../../util/Locales/useLanguage";
 
 const MyPageTabs: React.FC = () => {
   const location = useLocation();
@@ -8,56 +9,55 @@ const MyPageTabs: React.FC = () => {
     location.pathname === "/mypage" ? "/mypage/userinfo" : location.pathname;
   const [selectedTab, setSelectedTab] = useState<string>(initialTab);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <St.TabContainer>
       <St.TabWrap>
         <St.TabItem
-          tabcolor={selectedTab === "/mypage/userinfo" ? "#58DF97" : "#fff"}
+          tabcolor={selectedTab === "/mypage/userinfo" ? "#E38668" : "#fff"}
           onClick={() => {
             navigate("/mypage/userinfo");
             setSelectedTab("/mypage/userinfo");
           }}
         >
-          프로필 수정
+          {t("내 프로필")}
         </St.TabItem>
       </St.TabWrap>
 
       <St.TabWrap>
         <St.TabItem
-          tabcolor={selectedTab === "/mypage/makelist" ? "#9DCBF9" : "#fff"}
+          tabcolor={selectedTab === "/mypage/makelist" ? "#F09FC3" : "#fff"}
           onClick={() => {
             navigate("/mypage/makelist");
             setSelectedTab("/mypage/makelist");
           }}
         >
-          {/* 내가 만든 모임 리스트 */}
-          생성 목록
+          {t("생성목록")}
         </St.TabItem>
       </St.TabWrap>
 
       <St.TabWrap>
         <St.TabItem
-          tabcolor={selectedTab === "/mypage/joinlist" ? "#F19FC4" : "#fff"}
+          tabcolor={selectedTab === "/mypage/joinlist" ? "#9ECBFA" : "#fff"}
           onClick={() => {
             navigate("/mypage/joinlist");
             setSelectedTab("/mypage/joinlist");
           }}
         >
-          {/* 참가 모임 리스트 */}
-          참가 목록
+          {t("참가목록")}
         </St.TabItem>
       </St.TabWrap>
 
       <St.TabWrap>
         <St.TabItem
-          tabcolor={selectedTab === "/mypage/deleteuser" ? "#E48668" : "#fff"}
+          tabcolor={selectedTab === "/mypage/deleteuser" ? "#F0E0D5" : "#fff"}
           onClick={() => {
             navigate("/mypage/deleteuser");
             setSelectedTab("/mypage/deleteuser");
           }}
         >
-          회원 탈퇴
+          {t("회원탈퇴")}
         </St.TabItem>
       </St.TabWrap>
     </St.TabContainer>

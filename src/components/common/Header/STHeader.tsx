@@ -6,7 +6,8 @@ export const HeaderWrap = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  & svg {
+  & img {
+    width: 150px;
     cursor: pointer;
   }
 
@@ -18,10 +19,10 @@ export const HeaderWrap = styled.div`
     font-size: 15px;
     font-weight: 700;
   }
-`
+`;
 
 export const HeaderBtns = styled.div`
-  & button:first-child {
+  & button:not(:last-child) {
     margin-right: 10px;
   }
-`
+`;

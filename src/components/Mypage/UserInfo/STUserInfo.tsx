@@ -1,22 +1,26 @@
 import styled from "styled-components";
 
-export const UserInfoContainer = styled.div`
-  margin-top: 30px;
-  border: 1px solid #E7E7E7;
+export const MyPageContainer = styled.div`
+  position: relative;
+  z-index: 10;
+  top: -6px;
+  border: 1px solid #e7e7e7;
   border-radius: 34px;
   padding: 5px;
   background: #fff;
-`
+  min-height: 630px;
+`;
 
-export const UserInfoWrap = styled.div`
+export const MyPageWrap = styled.div`
   background: #fff;
   width: 100%;
-  border: 1px solid #ADADAD;
+  border: 1px solid #adadad;
   border-radius: 29px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 630px;
 `;
 
 export const ImageContainer = styled.div`
@@ -32,6 +36,7 @@ export const ProfileImage = styled.img`
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid #292d32;
 `;
 
 export const ProfileTextButton = styled.button`
@@ -62,7 +67,7 @@ export const InputContainer = styled.div`
   }
 
   & input {
-    border: 1px solid #E7E7E7;
+    border: 1px solid #e7e7e7;
     background: #fff;
     border-radius: 5px;
     padding: 10px;
@@ -71,16 +76,16 @@ export const InputContainer = styled.div`
 `;
 
 export const DupCheckButtonWrap = styled.div`
-  border: 1px solid #E7E7E7;
+  border: 1px solid #e7e7e7;
   padding: 2px;
   margin-left: 5px;
   border-radius: 23px;
-`
+`;
 
 export const DupCheckButton = styled.button`
-  border: 1px solid #ADADAD;
+  border: 1px solid #adadad;
   border-radius: 20px;
-  background-color: #F7D16F;
+  background-color: #f7d16f;
   cursor: pointer;
   font-size: 12px;
   padding: 5px;
@@ -95,43 +100,48 @@ export const Label = styled.label`
 
 export const EyleToggleWrap = styled.div`
   position: relative;
-`
+`;
 
 export const EyeToggleButton = styled.button`
   position: absolute;
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
+  color: #adadad;
   background: none;
   border: none;
   cursor: pointer;
 `;
 
-export const ErrorMessageJoin = styled.div`
+export const ErrorMessageJoin = styled.div<{ isValid: boolean | null }>`
+  font-size: 12px;
+  color: ${({ isValid }) => (isValid ? "#14be1d" : "#da7969")};
+  text-align: left;
+  margin-top: 5px;
+`;
+
+export const SubmitButtonWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+export const ErrorMessagePassword = styled.div`
   font-size: 12px;
   color: #da7969;
   text-align: left;
   margin-top: 5px;
 `;
 
-export const SubmitButtonWrap = styled.div`
-  border-radius: 23px;
-  border: 1px solid #e7e7e7;
-  background: #fff;
-  padding: 3px; 
-`
+export const GroupedInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 100%;
+`;
 
-export const SubmitButton = styled.button`
-  box-sizing: border-box;
-  border-radius: 20px;
-  border: 1px solid #adadad;
-  background: #edf895;
-  color: #646464;
-  text-align: center;
-  height: 45px;
-  padding: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 120px;
+export const ErrorMessageImage = styled.div`
+  font-size: 12px;
+  color: #da7969;
+  text-align: left;
+  margin-top: 5px;
 `;

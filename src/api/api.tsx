@@ -1,5 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
 import { axiosInstance } from "../api/axiosInstance";
-import axios, { AxiosResponse } from "axios";
 import {
   setAccessToken,
   setRefreshToken,
@@ -8,6 +8,7 @@ import {
 import { isTokenExpired } from "../util/token";
 import { uploadInstance } from "../api/axiosInstance";
 
+// 엑세스 토큰 만료시 리프레쉬토큰 이용해서 새로운 엑세스 토큰 발급
 export const checkAndRefreshTokenIfNeeded = async () => {
   const accessToken = localStorage.getItem("accessToken");
   if (accessToken) {
@@ -17,7 +18,7 @@ export const checkAndRefreshTokenIfNeeded = async () => {
       if (newToken) {
         setAccessToken(newToken);
       } else {
-        // 여기서 로그아웃 로직이나 리프레쉬 토큰도 만료되었을 때의 처리요망
+        window.location.href = "/login";
       }
     }
   }
@@ -25,7 +26,7 @@ export const checkAndRefreshTokenIfNeeded = async () => {
 
 // 로그인
 export const loginUser = async (email: string, password: string) => {
-  const response = await axiosInstance.post(`users/login`, {
+  const response = await axiosInstance.post(`/users/login`, {
     email,
     password,
   });
@@ -42,38 +43,30 @@ export const logoutUser = () => {
   localStorage.removeItem("refreshToken");
 };
 
-// 카카오 로그인
-type KakaoResponse = {
-  accessToken: string;
-  refreshToken: string;
-  userId: number;
+// 이메일 인증코드 보내기
+export const sendVerificationEmail = (
+  email: string,
+  subject: string,
+  html: string
+) => {
+  return axiosInstance.post("mail/send", {
+    to: email,
+    subject: subject,
+    html: html,
+  });
 };
 
-export const kakaoLogin = async (
-  code: string
-): Promise<AxiosResponse<KakaoResponse>> => {
-  const data = await axiosInstance.get<KakaoResponse>(
-    `users/login/kakao?code=${code}`,
-    {
-      headers: {
-        "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-      params: {
-        grant_type: "authorization_code",
-        client_id: import.meta.env.VITE_REACT_APP_KAKAO_CLIENT_ID,
-        redirect_uri: import.meta.env.VITE_REACT_APP_KAKAO_REDIRECT_URI,
-        code,
-      },
-    }
-  );
-
-  return data;
+// 이메일 인증코드 인증
+export const verifyEmailCode = (code: number) => {
+  return axiosInstance.post("mail/verify", {
+    code: code,
+  });
 };
 
 // 회원 탈퇴
 export const deleteUser = async (password: string) => {
   try {
-    const response = await axiosInstance.delete(`users/withdrawal`, {
+    const response = await axiosInstance.delete(`/users/withdrawal`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -92,13 +85,13 @@ export const deleteUser = async (password: string) => {
 
 // 게시글 전체 조회
 export const getPosts = async () => {
-  const response = await axiosInstance.get("events");
+  const response = await axiosInstance.get("/events");
   return response.data;
 };
 
 // 게시글 삭제
 export const deletePost = async (postId: string) => {
-  const { data } = await axiosInstance.delete(`posts/${postId}`);
+  const { data } = await axiosInstance.delete(`/posts/${postId}`);
   return data;
 };
 
@@ -116,7 +109,7 @@ interface PostUpdate {
 }
 
 export const updatePost = async (eventId: number, post: PostUpdate) => {
-  const { data } = await axiosInstance.patch(`event/${eventId}`, post);
+  const { data } = await axiosInstance.patch(`/event/${eventId}`, post);
   return data;
 };
 
@@ -138,17 +131,17 @@ interface PostDetail {
 }
 
 export const getOnePost = async (eventId: number): Promise<PostDetail> => {
-  const { data } = await axiosInstance.get(`event/${eventId}`);
+  const { data } = await axiosInstance.get(`/event/${eventId}`);
   return data.data;
 };
 
-// 이미지 수정
+// 이미지 업로드
 export const uploadProfileImage = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
   console.log("formData", formData.get("file"));
   try {
-    const response = await uploadInstance.post("users/upload", formData);
+    const response = await uploadInstance.post("/users/upload", formData);
     if (response.status === 201) {
       const imageUrl = response.data.profileImgURL;
       return imageUrl;
@@ -163,13 +156,9 @@ export const uploadProfileImage = async (file: File) => {
 };
 
 // 유저이미지 get
-export const getUserProfileImage = async (accessToken: string) => {
+export const getUserProfileImage = async () => {
   try {
-    const response = await axiosInstance.get("users/me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await axiosInstance.get("/users/me");
     return response.data.UserDetail[0].profileImg;
   } catch (error) {
     console.error("프로필 이미지를 가져오는 중 오류 발생:", error);
@@ -177,50 +166,10 @@ export const getUserProfileImage = async (accessToken: string) => {
   }
 };
 
-// 회원정보 수정
-export const updateUserInfo = async (
-  id: string,
-  nickname: string,
-  intro: string,
-  password: string,
-  confirmPassword: string,
-  nicknameChanged: boolean
-) => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      throw new Error("액세스 토큰이 없습니다.");
-    }
-    console.log("함수 내부 intro:", intro);
-    const response = await axiosInstance.patch(
-      `users/${id}`,
-      {
-        nickname,
-        intro,
-        password,
-        confirmPassword,
-        nicknameChanged,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (error instanceof axios.AxiosError) {
-      throw error.response ? error.response.data : error;
-    } else {
-      throw error;
-    }
-  }
-};
-
 // 닉네임 중복 확인
 export const checkNickname = async (nickname: string) => {
   try {
-    const response = await axiosInstance.post("users/checkNickname", {
+    const response = await axiosInstance.post("/users/checkNickname", {
       nickname,
     });
     return response.data;
@@ -233,7 +182,7 @@ export const checkNickname = async (nickname: string) => {
 // 이메일 중복 확인
 export const checkEmail = async (email: string) => {
   try {
-    const response = await axiosInstance.post("users/checkEmail", { email });
+    const response = await axiosInstance.post("/users/checkEmail", { email });
     return response.data;
   } catch (error) {
     console.error("이메일 중복 확인 중 오류 발생:", error);
@@ -259,7 +208,7 @@ export const getEvents = async (userId: number) => {
     if (!accessToken) {
       throw new Error("액세스 토큰이 없습니다.");
     }
-    const response = await axiosInstance.get(`users/${userId}/hostedEvents`, {
+    const response = await axiosInstance.get(`/users/${userId}/hostedEvents`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -291,7 +240,7 @@ export const getJoinedEvents = async (userId: number) => {
     if (!accessToken) {
       throw new Error("액세스 토큰이 없습니다.");
     }
-    const response = await axiosInstance.get(`users/${userId}/joinedEvents`, {
+    const response = await axiosInstance.get(`/users/${userId}/joinedEvents`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -323,17 +272,132 @@ export const getJoinedEvents = async (userId: number) => {
   }
 };
 
-// 이벤트 참석 취소
-export const cancelParticipation = async (eventId: number) => {
-  console.log("cancelParticipation 함수 호출됨!");
+// 이벤트 상세 정보 조회
+interface EventDetailResponse {
+  event: {
+    eventId: number;
+    eventName: string;
+    maxSize: number;
+    eventDate: Date;
+    signupStartDate: Date;
+    signupEndDate: Date;
+    eventImg: string;
+    eventLocation: string;
+    location_City: string;
+    location_District: string;
+    content: string;
+    category: string;
+    isVerified: "yes" | "no";
+    isDeleted: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+      Viewlogs: number;
+    };
+  };
+  guestList: number;
+  hostUser: Array<{
+    userDetailId: number;
+    UserId: number;
+    nickname: string;
+    intro: string;
+    profileImg: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  guestUser: GuestUser[][];
+}
+
+type GuestUser = {
+  userDetailId: number;
+  UserId: number;
+  nickname: string;
+  intro: string;
+  profileImg: string;
+  userLocation: null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type { EventDetailResponse };
+
+export const getEventDetail = async (
+  eventId: number
+): Promise<EventDetailResponse> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
       throw new Error("액세스 토큰이 없습니다.");
     }
 
-    const response = await axiosInstance.put(
-      `events/${eventId}/join`,
+    const response = await axiosInstance.get<EventDetailResponse>(
+      `/events/${eventId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("이벤트 상세 정보 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 회원 정보 수정
+interface UpdateUserInfoParams {
+  nickname: string;
+  intro: string;
+  email: string;
+  nameChanged: boolean;
+  userLocation: string;
+}
+
+interface UpdateUserInfoResponse {
+  message: string;
+}
+
+export const updateUserProfile = async (
+  params: UpdateUserInfoParams
+): Promise<UpdateUserInfoResponse> => {
+  try {
+    const response = await axiosInstance.patch<UpdateUserInfoResponse>(
+      "/users/update",
+      params
+    );
+    return response.data;
+  } catch (error) {
+    console.error("회원 정보 업데이트 실패 😢", error);
+    throw error;
+  }
+};
+
+// 패스워드 업데이트 API
+export const updatePassword = async (newPassword: string) => {
+  try {
+    const response = await axiosInstance.patch("/users/updatePassword", {
+      password: newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("패스워드 업데이트 실패 😢", error);
+    throw error;
+  }
+};
+
+// 이벤트 참가 신청
+export const joinEvent = async (eventId: number) => {
+  console.log("joinEvent 함수 호출됨!");
+
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      throw new Error("액세스 토큰이 없습니다.");
+    }
+
+    const response = await axiosInstance.post(
+      `/events/${eventId}/join`,
       {},
       {
         headers: {
@@ -344,18 +408,53 @@ export const cancelParticipation = async (eventId: number) => {
 
     console.log("API 응답:", response.data);
 
-    if (
-      response.status === 200 &&
-      response.data.message === `${eventId}번 모임 참석 취소!`
-    ) {
-      console.log("참석 취소 성공!");
-      return response.data;
-    } else {
-      console.error("참석 취소 실패:", response);
-      return null;
+    if (response.status === 201) {
+      if (response.data.confirm) {
+        console.log(`${response.data.message} 참가 확정!`);
+        return "confirmed";
+      } else {
+        console.log(`${response.data.message} 참가 대기중!`);
+        return "pending";
+      }
     }
+
+    console.error("참가 신청 실패:", response);
+    return null;
   } catch (error) {
-    console.error("참석 취소 중 오류 발생:", error);
+    console.error("참가 신청 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+// 이벤트 참석 취소
+export const cancelEventJoin = async (eventId: number) => {
+  console.log("cancelEventJoin 함수 호출됨!");
+
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      throw new Error("액세스 토큰이 없습니다.");
+    }
+
+    const response = await axiosInstance.delete(`/events/${eventId}/join`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log("API 응답:", response.data);
+
+    if (response.status === 200) {
+      if (!response.data.confirm) {
+        console.log(`${response.data.message} 참가 취소 성공!`);
+        return "cancelled";
+      }
+    }
+
+    console.error("참가 취소 실패:", response);
+    return null;
+  } catch (error) {
+    console.error("참가 취소 중 오류 발생:", error);
     throw error;
   }
 };

@@ -7,10 +7,13 @@ export const CardSection = styled.div`
   border-radius: 34px;
   padding: 9px;
   margin-bottom: 20px;
+
+  &:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
 ` 
 
 export const CardWrap = styled.div`
-  /* min-height: 335px; */
   border: 1px solid #ADADAD;
   border-radius: 29px;
   padding: 20px;
@@ -65,6 +68,14 @@ export const CardBottom = styled.div`
   margin-top: 20px;
   padding-top: 15px;
   border-top: 2px solid #E7E7E7;
+`
+
+export const ProfileImg = styled.img`
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #292D32;
 `
 
 export const NickName = styled.p`

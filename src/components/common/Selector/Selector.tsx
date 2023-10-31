@@ -1,22 +1,29 @@
-// Selector.tsx
-import React from 'react';
-import * as St from './STSelector';
+import React from "react";
+import * as St from "./STSelector";
 
 interface SelectorProps {
-  options: { value: any; label: any }[] | undefined;
+  value: string | undefined;
+  options: { value: string ; label: string }[];
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  children?: React.ReactNode; // children 속성을 선택적으로 추가
 }
 
-const Selector: React.FC<SelectorProps> = ({ options, onChange }) => {
-  const normalizedOptions = options || [];
+const Selector: React.FC<SelectorProps> = ({ options , onChange }) => {
 
   return (
     <St.SelectorBar>
       <St.Selector onChange={onChange}>
-        {normalizedOptions.map((option) => (
-          <option>
-            {option.label}
+        {options.map((option, index) => (
+          <option
+            key={index}
+            value={
+              Array.isArray(option.value)
+                ? option.value.join(",")
+                : option.value
+            }
+          >
+            {Array.isArray(option.label)
+              ? option.label.join(",")
+              : option.label}
           </option>
         ))}
       </St.Selector>

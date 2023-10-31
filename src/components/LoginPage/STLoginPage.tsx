@@ -1,5 +1,23 @@
 import styled from "styled-components";
 
+export const Icon = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 50px;
+
+  & img:first-child {
+    width: 160px;
+    cursor: pointer;
+  }
+
+  & img:last-child {
+    width: 210px;
+    cursor: pointer;
+  }
+`
+
 export const LabelWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -51,7 +69,7 @@ export const StyledInput = styled.input`
 `;
 
 export const SignupText = styled.div`
-  margin-top: 20px;
+  margin-top: 30px;
   font-size: 14px;
   user-select: none;
   color: #adadad;
@@ -69,14 +87,66 @@ export const ErrorMessageLogin = styled.div`
   width: 100%;
 `;
 
-export const KakaoButton = styled.button`
+export const Divider = styled.div`
+  margin-top: 65px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  border: none;
-  background-color: #fefbf6;
-  margin-top: 5px;
-
-  img {
-    border-radius: 12px;
-  }
+  font-size: 14px;
 `;
+
+export const Line = styled.div`
+  width: 80px;
+  height: 1px;
+  background: #E7E7E7;
+  margin: 0px;
+`;
+
+export const Text = styled.span`
+  color: #ADADAD;
+  margin: 0 10px;
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  margin-top: 10px;
+  gap: 15px;
+`;
+
+// 카카오 로그인 버튼
+export const KakaoLoginBtn = styled.img`
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+`;
+
+// 구글 로그인 버튼
+export const GoogleLoginBtn = styled.img`
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+`;
+
+// 네이버 버튼
+export const NaverLoginBtn = styled.img`
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+`;
+
+// 언어선택 버튼
+export const Language = styled.div`
+  position: absolute;
+  top: 25px;
+  right: 20px;
+
+  & button {
+    border: none;
+    background-color: transparent;
+  }
+  & img {
+    display: block;
+    width: 35px;
+    cursor: pointer;
+  }
+`

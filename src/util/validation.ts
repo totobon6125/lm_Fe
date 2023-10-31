@@ -66,7 +66,7 @@ export function validateEmail(email: string) {
 
 // 한 줄 자기소개
 export function validateBio(bio: string) {
-  if (!bio) {
+  if (!bio || !bio.trim()) {
     return "자기소개를 입력하세요.";
   }
   return "";
@@ -110,7 +110,8 @@ export function UpdateValidatePasswordConfirmation(
 
 // 이미지 업로드 유효성 검사
 export function validateImageUpload(file: File | null) {
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB // 리사이징을해서 압축하고 백으로 보내기 // 이미지압축 라이브러리 활용하자.
+  // 미리 압출을해서 보내야 빠르고 좋다.
   const SUPPORTED_FILE_TYPES = ["image/jpeg", "image/png", "image/gif"];
 
   if (!file) {
@@ -128,11 +129,25 @@ export function validateImageUpload(file: File | null) {
 export async function handleCheckNickname(nickname: string) {
   try {
     const data = await checkNickname(nickname);
-    const statusMessage = parseInt(data.message, 10); // 문자열을 숫자로 변환
+    const statusMessage = parseInt(data.message, 10);
 
     if (statusMessage === 201) {
       return "닉네임이 중복되었습니다.";
     } else if (statusMessage === 200) {
+      // 추가 중복 검사
+      const additionalErrorMessage = UpdateValidateNickname(nickname);
+      if (additionalErrorMessage) {
+        return additionalErrorMessage;
+      }
+
+      if (nickname.length < 2 || nickname.length > 8) {
+        return "닉네임은 2자 이상 8자 이하로 입력해야 합니다.";
+      }
+
+      if (/[!@#$%^&*(),.?":{}|<> ]|[ㄱ-ㅎㅏ-ㅣ]/.test(nickname)) {
+        return "닉네임에는 특수문자, 공백, 단독 자음/모음을 사용할 수 없습니다.";
+      }
+
       return "닉네임을 사용할 수 있습니다.";
     } else {
       return "닉네임 확인 중 오류 발생.";
@@ -142,6 +157,7 @@ export async function handleCheckNickname(nickname: string) {
     return "닉네임 중복 확인 중 오류 발생.";
   }
 }
+
 // 이메일 중복검사
 export async function handleCheckEmail(email: string) {
   try {
@@ -159,4 +175,28 @@ export async function handleCheckEmail(email: string) {
     console.error("이메일 중복 확인 중 오류 발생:", error);
     return "이메일 중복 확인 중 오류 발생.";
   }
+}
+
+// 탈퇴사유
+export function validateDeleteReason(reason: string) {
+  if (!reason) {
+    return "탈퇴 사유를 입력해주세요.";
+  }
+  return "";
+}
+
+// 인증 코드 유효시간 확인
+export function validateAuthCodeTimer(isTimerExpired: boolean) {
+  if (isTimerExpired) {
+    return "인증 코드의 유효시간이 지났습니다.";
+  }
+  return "";
+}
+
+// 이메일 인증 확인
+export function validateEmailVerification(isEmailVerified: boolean) {
+  if (isEmailVerified) {
+    return "인증되었습니다.";
+  }
+  return "";
 }
