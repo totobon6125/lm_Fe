@@ -1,0 +1,38 @@
+import React from "react";
+import Header from "../components/common/Header/Header";
+import MainPage from "../components/MainPage/MainPage";
+import { useEffect } from "react";
+import { useRecoilState } from "recoil";
+import { isLoginState, userState } from "../recoil/atoms/UserState";
+
+const Main: React.FC = () => {
+  const [, setIsLoginState] = useRecoilState(isLoginState);
+  const [, setUser] = useRecoilState(userState);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get("userId");
+    const accessToken = urlParams.get("accessToken");
+    const refreshToken = urlParams.get("refreshToken");
+    if (urlParams.size) {
+      if (userId !== null) {
+        setUser({ userId: Number(userId) });
+      } else {
+        console.error("userId is null");
+      }
+      localStorage.setItem("accessToken", accessToken!);
+      localStorage.setItem("refreshToken", refreshToken!);
+      setIsLoginState(true);
+    }
+    window.history.replaceState({}, document.title, "/");
+  }, [setIsLoginState, setUser]);
+
+  return (
+    <>
+      <Header></Header>
+      <MainPage></MainPage>
+    </>
+  );
+};
+
+export default Main;
