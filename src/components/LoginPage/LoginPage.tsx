@@ -16,10 +16,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { validateEmail, validateLoginPassword } from "../../util/validation";
 import textlogo from "../../asset/localMingleImages/textlogo.png";
-import Mingle from "../../asset/localMingleImages/Mingle.png";
-import kologo from "../../asset/languageImages/kologo.png";
+import mingle from "../../asset/localMingleImages/Mingle.png";
 import enlogo from "../../asset/languageImages/enlogo.png";
 import jplogo from "../../asset/languageImages/jplogo.png";
+import kologo from "../../asset/languageImages/kologo.png";
 
 interface DecodedToken {
   sub: number;
@@ -128,20 +128,22 @@ const LoginPage: React.FC = () => {
     <St.Container>
       <Toaster />
       <St.Icon onClick={goToMain}>
-        <img src={Mingle} alt="밍글이" />
-        <img src={textlogo} alt="로컬밍글" />
+        <img src={ mingle } alt="밍글이" />
+        <img src={ textlogo } alt="로컬밍글" />
       </St.Icon>
       <St.Language onClick={changeLanguage}>
-        {(() => {
-          switch (currentLang) {
-            case "ko":
-              return <img src={kologo} alt="Korean" />;
-            case "jp":
-              return <img src={jplogo} alt="Japanese" />;
-            default:
-              return <img src={enlogo} alt="English" />;
-          }
-        })()}
+        <button onClick={changeLanguage}>
+          {(() => {
+            switch (currentLang) {
+              case "ko":
+                return <img src={ kologo } alt="Korean" />;
+              case "jp":
+                return <img src={ jplogo } alt="Japanese" />;
+              default: 
+                return <img src={ enlogo } alt="English" />;
+            }
+          })()}
+        </button>
       </St.Language>
       <St.LabelWrapper>
         <label>{t("이메일")}</label>
