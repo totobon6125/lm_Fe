@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import * as St from "./STViewPost";
 import Modal from "../../common/Modal/Modal";
@@ -30,6 +30,8 @@ const ViewPost: React.FC = () => {
   const loggedInUserId = user.userId;
   const { eventId } = useParams<{ eventId?: string }>();
   const [, setIsModalOpen] = useRecoilState(modalState);
+  const [isJoined, setIsjoined] = useState(false);
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const {
@@ -44,9 +46,12 @@ const ViewPost: React.FC = () => {
       enabled: !!eventId,
       retry: 1,
       onError: () => {
-        toast.error(t("이벤트 정보를 불러오는데 실패했어요 😢"), {
+        toast.error(t("로그인이 필요합니다 😢"), {
           className: "toast-error toast-container",
         });
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
       },
     }
   );
@@ -54,9 +59,13 @@ const ViewPost: React.FC = () => {
   const isAuthor = eventDetail?.hostUser.some(
     (host) => host.UserId === loggedInUserId
   );
-  const isJoined = eventDetail?.guestUser.some((guestGroup) =>
-    guestGroup.some((guest) => guest.UserId === loggedInUserId)
-  );
+
+  useEffect(() => {
+    const isJoined = eventDetail?.guestUser.some((guestGroup) =>
+      guestGroup.some((guest) => guest.UserId === loggedInUserId)
+    );
+    setIsjoined(!!isJoined);
+  }, [eventDetail, loggedInUserId]);
 
   const handleJoinEvent = async () => {
     const currentGuestCount = eventDetail?.guestUser.length || 0;

@@ -99,6 +99,11 @@ textarea {
   padding: 0;
 }
 
+input:focus,
+textarea:focus{
+  outline: none;
+}
+
 /* HTML5 display-role reset for older browsers */
 article,
 aside,
@@ -137,11 +142,28 @@ table {
 }
 
 /************************************************
+                      폰트
+************************************************/
+/* 기본 폰트 */
+@import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css");
+* {font-family: "Noto Sans KR", sans-serif;}
+
+/* 강조 폰트 */
+@font-face { 
+  font-family: "yangjin", sans-serif;
+  src: url("https://cdn.jsdelivr.net/gh/supernovice-lab/font@0.9/yangjin.woff") format(‘woff’); 
+  font-weight: normal;
+  font-style: normal;
+}
+
+/************************************************
                   기본 화면 넓이
 ************************************************/
 body {
   background: #eee;
   color: #131313;
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 12px;
 }
 #root {
   width: 500px;
@@ -159,17 +181,3 @@ body {
   }
 }
 
-/************************************************
-                      폰트
-************************************************/
-/* 기본 폰트 */
-@import url("//fonts.googleapis.com/earlyaccess/notosanskr.css");
-* {font-family: "Noto Sans KR", sans-serif;}
-
-/* 강조 폰트 */
-@font-face { 
-  font-family: "yangjin", sans-serif;
-  src: url("https://cdn.jsdelivr.net/gh/supernovice-lab/font@0.9/yangjin.woff") format(‘woff’); 
-  font-weight: normal;
-  font-style: normal;
-}

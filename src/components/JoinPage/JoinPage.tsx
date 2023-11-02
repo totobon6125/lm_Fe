@@ -26,6 +26,10 @@ import {
   verifyEmailCode,
   sendVerificationEmail,
 } from "../../api/api";
+import textlogo from "../../asset/localMingleImages/textlogo.png";
+import kologo from "../../asset/languageImages/kologo.png";
+import enlogo from "../../asset/languageImages/enlogo.png";
+import jplogo from "../../asset/languageImages/jplogo.png";
 
 const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
@@ -56,7 +60,7 @@ const SignUpForm: React.FC = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<null | boolean>(null);
+  const [, setIsSuccess] = useState<null | boolean>(null);
   const [isNicknameValid, setIsNicknameValid] = useState<boolean>(false);
 
   const handleSignUp = async () => {
@@ -165,13 +169,13 @@ const SignUpForm: React.FC = () => {
 
       timer = setInterval(() => {
         setCountdown((prevCountdown) => {
-          if (prevCountdown !== null) {
-            if (prevCountdown === 0) {
-              clearInterval(timer!);
-              setIsTimerExpired(true);
-              setAuthError(t("인증 코드의 유효시간이 지났습니다."));
-            }
+          if (prevCountdown !== null && prevCountdown > 0) {
             return prevCountdown - 1;
+          } else if (prevCountdown === 0) {
+            clearInterval(timer!);
+            setIsTimerExpired(true);
+            setAuthError(t("인증 코드의 유효시간이 지났습니다."));
+            return 0;
           }
           return null;
         });
@@ -257,10 +261,13 @@ const SignUpForm: React.FC = () => {
     }
   };
 
-  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNicknameChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newValue = e.target.value;
     setNickname(newValue);
-    setNicknameError(t(validateNickname(newValue)));
+    const errorMessage = await handleCheckNickname(newValue);
+    setNicknameError(t(errorMessage));
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -334,11 +341,23 @@ const SignUpForm: React.FC = () => {
   };
   return (
     <ST.Wrapper>
-      <div onClick={goToMain}>{t("회원가입")}</div>
-      <button onClick={handleLanguageChange}>
-        {currentLang === "ko" ? "🇰🇷" : currentLang === "en" ? "🇺🇸" : "🇯🇵"}
-      </button>
-      {/* <img src="" alt="logo" onClick={goToMain}>로고</img> */}
+      <ST.Icon onClick={goToMain}>
+        <img src={textlogo} alt="로컬밍글" />
+      </ST.Icon>
+      <ST.Language onClick={handleLanguageChange}>
+        <button onClick={handleLanguageChange}>
+          {(() => {
+            switch (currentLang) {
+              case "ko":
+                return <img src={kologo} alt="Korean" />;
+              case "jp":
+                return <img src={jplogo} alt="Japanese" />;
+              default:
+                return <img src={enlogo} alt="English" />;
+            }
+          })()}
+        </button>
+      </ST.Language>
       <ST.LabelWrapper>
         <label>{t("닉네임")}</label>
         <div>
@@ -367,13 +386,15 @@ const SignUpForm: React.FC = () => {
           <input type="email" value={email} onChange={handleEmailChange} />
           {emailSent ? (
             <>
-              <input
+              <ST.EmailCodeConfirmInput
                 type="text"
                 value={authCode}
                 onChange={(e) => setAuthCode(e.target.value)}
                 placeholder={t("인증코드")}
               />
-              <button onClick={handleAuth}>{t("인증")}</button>
+              <ST.EmailCodeConfirmBtn onClick={handleAuth}>
+                {t("인증")}
+              </ST.EmailCodeConfirmBtn>
             </>
           ) : (
             <>
@@ -391,22 +412,17 @@ const SignUpForm: React.FC = () => {
             </>
           )}
         </div>
+        <ST.ValidationColor isValid={isEmailValid || isEmailVerified}>
+          {isEmailVerified ? authError : emailError}
+        </ST.ValidationColor>
         <ST.CountdownText>
           {countdown !== null && (
             <span>
-              {t("남은 시간:")} {Math.floor(countdown / 60)} {t("분")}{" "}
+              {t("남은 시간")} {Math.floor(countdown / 60)} {t("분")}{" "}
               {countdown % 60} {t("초")}
             </span>
           )}
         </ST.CountdownText>
-        <ST.ValidationColor isValid={isEmailValid}>
-          {emailError}
-        </ST.ValidationColor>
-        {authError && (
-          <ST.ValidationColor isValid={isSuccess}>
-            {authError}
-          </ST.ValidationColor>
-        )}
       </ST.LabelWrapper>
       <ST.LabelWrapper>
         <label>{t("비밀번호")}</label>

@@ -21,13 +21,25 @@ const WritePost: React.FC = () => {
   const [eventDate, setEventDate] = useState<string>();
   const [signupStartDate, setSignupStartDate] = useState<string>();
   const [signupEndDate, setSignupEndDate] = useState<string>();
-  const [location_City, setLocation_City] = useState<string>("시 / 도");
-  const [location_District, setLocation_District] = useState<string>("구 / 군");
+  const [location_City, setLocation_City] = useState<string>("");
+  const [location_District, setLocation_District] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [category, setCategory] = useState<string>("");
-  const [isDeleted, ] = useState<boolean>(false);
+  const [isDeleted] = useState<boolean>(false);
   const [isVerified, setIsVerified] = useState<string>("");
-  const [eventImg, ] = useState<null>(null);
+  const [eventImg] = useState<null>(null);
+
+  // 비로그인 접근 시 차단
+  useEffect(() => {
+    if (!accessToken) {
+      toast.error(t("로그인이 필요합니다 😢"), {
+        className: "toast-error toast-container",
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    }
+  }, [accessToken, navigate, t]);
 
   useEffect(() => {
     setLocation_City(t("시 / 도"));
@@ -80,7 +92,6 @@ const WritePost: React.FC = () => {
     }
   );
 
-  
   // 카테고리 옵션 - DB 연동
   const { data: categoryOptionsData } = useQuery<CategoryOptionsProps, Error>(
     "categoryOptions",
@@ -126,7 +137,9 @@ const WritePost: React.FC = () => {
   }
 
   // 구/군 옵션 - DB 연동
-  const { data: gugunOptionsData, refetch: refetchGugunOptions } = useQuery<GugunOptionsProps[]>(
+  const { data: gugunOptionsData, refetch: refetchGugunOptions } = useQuery<
+    GugunOptionsProps[]
+  >(
     // queryKey를 배열로 감싸서 설정
     ["gugunOptions", location_City],
     async () => {
@@ -149,7 +162,13 @@ const WritePost: React.FC = () => {
   // refetch를 통해 시/도 옵션이 바뀌면 구/군 옵션이 바로 바뀌도록 설정
   useEffect(() => {
     refetchGugunOptions();
-  }, [location_City]);
+
+    // 시/도 옵션 초기화시 구/군 옵션도 초기화... 인데 추가 작업 중
+    if (location_City == t("시 / 도") || location_City == "") {
+      setLocation_District("");
+    }
+
+  }, [location_City, location_District, refetchGugunOptions]);
 
   // 게시글 작성 interface (console.log 기준)
   interface WritePostData {
@@ -194,44 +213,105 @@ const WritePost: React.FC = () => {
         !signupEndDate ||
         !content
       ) {
-        alert("내용을 모두 입력해주세요!");
+        toast.error(t("내용을 모두 입력해주세요!"), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      // 모임일시가 오늘 날짜보다 과거인 경우 체크
+      const today = new Date();
+      const yesterday = new Date(today.setDate(today.getDate() - 1));
+      if (new Date(eventDate) < yesterday) {
+        toast.error(t("모임일시는 오늘 날짜보다 과거일 수 없습니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
       // 모임일시가 참가신청 기간보다 빠른 경우 체크
       if (new Date(eventDate) < new Date(signupStartDate)) {
-        alert("모임일시는 참가신청 기간보다 빠를 수 없습니다!");
+        toast.error(t("모임일시는 참가신청 기간보다 빠를 수 없습니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
       // 참가신청 기간 두번째 input이 첫번째 input보다 빠른 경우 체크
       if (new Date(signupStartDate) > new Date(signupEndDate)) {
-        alert("참가신청 기간은 종료일이 시작일보다 빠를 수 없습니다!");
+        toast.error(t("참가신청 기간은 종료일이 시작일보다 빠를 수 없습니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
       // 참가신청 기간 두번째 input이 모임일시보다 빠른 경우 체크
       if (new Date(eventDate) < new Date(signupEndDate)) {
-        alert("참가신청 기간은 모임일시보다 빠를 수 없습니다!");
+        toast.error(t("참가신청 기간은 모임일시보다 빠를 수 없습니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
       // 모임일시보다 참가신청 기간이 늦는 경우 체크
       if (new Date(eventDate) < new Date(signupEndDate)) {
-        alert("참가신청 기간은 모임일시보다 늦을 수 없습니다!");
+        toast.error(t("참가신청 기간은 모임일시보다 늦을 수 없습니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
-      // 모임인원 체크
+      // 최소 모임인원 체크
       if (maxSize < 0 || maxSize == 0) {
-        alert("모임인원은 1명 이상이어야 합니다!");
+        toast.error(t("모임인원은 1명 이상이어야 합니다!"), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      // 최대 모임인원 체크
+      if (maxSize > 50) {
+        toast.error(t("최대 모임인원은 50명까지 입니다!"), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
       // 본문 내용 길이 체크
       const contentLength = 200;
       if (content.length > contentLength) {
-        alert(`본문 내용은 ${contentLength}자 이내로 입력해주세요!`);
+        toast.error(t(`본문 내용은 ${contentLength}자 이내로 입력해주세요!`), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      // 샐랙터 체크
+      if (category == t("선택") || category == "") {
+        toast.error(t('카테고리 선택해 주세요!'), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      if (isVerified == t("선택") || isVerified == "") {
+        toast.error(t('모임 범위 선택해 주세요!'), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      if (location_City == t("시 / 도") || location_City == "") {
+        toast.error(t('시/도 선택해 주세요!'), {
+          className: "toast-error toast-container",
+        });
+        return;
+      }
+
+      if (location_District == t("구 / 군") || location_District == "") {
+        toast.error(t('구/군 선택해 주세요!'), {
+          className: "toast-error toast-container",
+        });
         return;
       }
 
@@ -264,10 +344,12 @@ const WritePost: React.FC = () => {
       <St.SelectorWrap>
         {/* 카테고리 */}
         <Selector
-          options={categoryOptionsData?.data.category?.map((item:string) => ({
-            value: t(item),
-            label: t(item),
-          }))||[]}
+          options={
+            categoryOptionsData?.data.category?.map((item: string) => ({
+              value: t(item),
+              label: t(item),
+            })) || []
+          }
           value={category}
           onChange={(selectedOption: React.ChangeEvent<HTMLSelectElement>) => {
             setCategory(selectedOption.target.value);
@@ -276,10 +358,12 @@ const WritePost: React.FC = () => {
 
         {/* 위치인증 */}
         <Selector
-          options={locationOptionsData?.data?.verify.map((item:string) => ({
-            value: t(item),
-            label: t(item),
-          }))||[]}
+          options={
+            locationOptionsData?.data?.verify.map((item: string) => ({
+              value: t(item),
+              label: t(item),
+            })) || []
+          }
           value={isVerified}
           onChange={(selectedOption: React.ChangeEvent<HTMLSelectElement>) => {
             setIsVerified(selectedOption.target.value);
@@ -327,30 +411,32 @@ const WritePost: React.FC = () => {
         </div>
         <div>
           <p>{t("모임주소")}</p>
-          <Selector
-            options={(sidoOptionsData||[])?.map((item) => ({
-              value: item.doName,
-              label: item.doName,
-            }))}
-            value={location_City}
-            onChange={(
-              selectedOption: React.ChangeEvent<HTMLSelectElement>
-            ) => {
-              setLocation_City(selectedOption.target.value);
-            }}
-          ></Selector>
-          <Selector
-            options={(gugunOptionsData||[])?.map((option) => ({
-              value: option.guName,
-              label: option.guName,
-            }))}
-            value={location_District}
-            onChange={(
-              selectedOption: React.ChangeEvent<HTMLSelectElement>
-            ) => {
-              setLocation_District(selectedOption.target.value);
-            }}
-          ></Selector>
+          <St.DatePickerWrap>
+            <Selector
+              options={(sidoOptionsData || [])?.map((item) => ({
+                value: item.doName,
+                label: item.doName,
+              }))}
+              value={location_City}
+              onChange={(
+                selectedOption: React.ChangeEvent<HTMLSelectElement>
+              ) => {
+                setLocation_City(selectedOption.target.value);
+              }}
+            ></Selector>
+            <Selector
+              options={(gugunOptionsData || [])?.map((option) => ({
+                value: option.guName,
+                label: option.guName,
+              }))}
+              value={location_District}
+              onChange={(
+                selectedOption: React.ChangeEvent<HTMLSelectElement>
+              ) => {
+                setLocation_District(selectedOption.target.value);
+              }}
+            ></Selector>
+          </St.DatePickerWrap>
         </div>
         <div>
           <p>{t("모임인원")}</p>
